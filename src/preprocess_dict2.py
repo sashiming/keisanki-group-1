@@ -4,14 +4,19 @@ class Info2TreeNode:
         self.type = type #経験+1評価-1未確定0
         self.dict: dict[str:Info2TreeNode] = {}
     def add(self,str:str,score:int,type:int):
+        if (str in self.dict) and score != 0 and type != 0 and self.dict[str].score == 0 and self.dict[str].type == 0:
+            self.dict[str].score = score
+            self.dict[str].type = type
         if str not in self.dict:
             self.dict[str]=Info2TreeNode(score,type)  
         return self.dict[str]
 
 class Info2:
     def __init__(self,dictionary):
-        self.dict: dict[str:Info2TreeNode] ={}
+        self.first = Info2TreeNode(0,0)
+        self.current:Info2TreeNode = self.first
         for line in dictionary:
+            current = self.first
             data = line.split('\t')
             eval = data[0]
             score = 0
@@ -25,14 +30,18 @@ class Info2:
             if "評価" in eval:
                 type = -1
             data2 = data[1].split()
-            next_node = None
             for i, word in enumerate(data2):
-                if i == 0:
-                    if word not in self.dict:
-                        self.dict[word] = Info2TreeNode(score if i == len(data2)-1 else 0, type if i == len(data2)-1 else 0)
-                    next_node = self.dict[word]
-                else:
-                    next_node = next_node.add(word, score if i == len(data2)-1 else 0, type if i == len(data2)-1 else 0)
+                self.current = self.current.add(word,score if i == len(data2)-1 else 0,type if i == len(data2)-1 else 0)
+        self.current = self.first
+    def search(self,word):
+        if word in self.current.dict:
+            self.current = self.current.dict[word]
+            return (True,self.current.score,self.current.type)
+        else:
+            return (False,0,0)
+            
+    def reset(self,):
+        self.current = self.first
         
 
 
