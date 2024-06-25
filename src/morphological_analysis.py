@@ -1,9 +1,14 @@
 import MeCab
+import os
 import platform
 
 class Morpheme:
     def __init__(self, analysis):
         self.data = analysis
+    def get_raw_str(self):
+        """元の文章に登場した形を文字列で返す
+        """
+        return self.data[0]
     def get_original_form(self):
         """原形(活用させない形)を文字列で返す
         """
@@ -26,7 +31,9 @@ def analyze_single_sentence(sentence: str):
     """
     os_name = platform.system()
     null_path = 'nul' if os_name == 'Windows' else '/dev/null'
-    wakati = MeCab.Tagger(f'-r {null_path} -d ../data/mecab_dictionary -Owakati')
-    chasen = MeCab.Tagger(f'-r {null_path} -d ../data/mecab_dictionary -Ochasen')
+    project_root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    dictionary_path = os.path.join(project_root_path, 'data', 'mecab_dictionary')
+    wakati = MeCab.Tagger(f'-r {null_path} -d {dictionary_path} -Owakati')
+    chasen = MeCab.Tagger(f'-r {null_path} -d {dictionary_path} -Ochasen')
     result = [Morpheme(chasen.parse(x).split()) for x in wakati.parse(sentence).split()]
     return result
