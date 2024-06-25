@@ -24,8 +24,9 @@ def calc_score(data, dict1, dict2):
             if '記号' not in morph.get_type():
                 all_morphemes += 1
             if '名詞' in morph.get_type():
-                val = dict1[genkei].value
-                score += val 
+                if genkei in dict1:
+                    val = dict1[genkei].value
+                    score += val 
             if (not is_root) or morph.is_declinable():
                 found, w_score, w_typ = dict2.search(genkei)
                 score += w_score
